@@ -20,7 +20,7 @@ def create_app(config_name="default"):
 
     if config_name == "production":
         env_secret = os.getenv("SECRET_KEY", "").strip()
-        if not env_secret or env_secret == Config.SECRET_KEY:
+        if not env_secret or len(env_secret) < 32:
             raise RuntimeError("SECRET_KEY environment variable must be set to a secure value in production.")
         app.config["SECRET_KEY"] = env_secret
         logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s")
