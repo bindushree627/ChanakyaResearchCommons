@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — Discussion{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <!-- Main Post -->
+      <div class="academic-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-person-circle fs-3 text-primary me-2"></i>
+            <div>
+              <h6 class="fw-bold mb-0">
+                <a href="{{ url_for('auth.user_profile', user_id=post.user_id) }}" class="text-dark text-decoration-none">
+                  {{ post.full_name }}
+                </a>
+              </h6>
+              <small class="text-muted">@{{ post.username }} &bull; {{ post.user_role }} ({{ post.department_code }}) &bull; {{ post.created_at | format_date }}</small>
+            </div>
+          </div>
+          {% if post.topic_name %}
+          <span class="badge badge-topic">{{ post.topic_name }}</span>
+          {% endif %}
+        </div>
+
+        <h3 class="fw-bold mb-3">{{ post.title }}</h3>
+
+        <div class="text-secondary mb-4 leading-relaxed" style="line-height: 1.7; font-size: 1.05rem;">
+          {{ post.content }}
+        </div>
+
+        <!-- Attached Paper Card -->
+        {% if post.attached_paper_title %}
+        <div class="p-3 mb-4 bg-light rounded border border-primary border-opacity-25">
+          <span class="text-primary fw-semibold small text-uppercase"><i class="bi bi-paperclip me-1"></i> Attached Research Paper:</span>
+          <h6 class="fw-bold mt-1 mb-1">
+            <a href="{{ url_for('library.paper_detail', paper_id=post.attached_paper_id) }}" class="text-decoration-none text-dark">
+              {{ post.attached_paper_title }}
+            </a>
+          </h6>
+          <small class="text-muted">Indexed in Chanakya Shared Library ({{ post.attached_paper_year }})</small>
+        </div>
+        {% endif %}
+
+        <!-- Tags -->
+        {% if post.tags %}
+        <div class="mb-3">
+          {% for t in post.tags %}
+          <span class="badge bg-light text-secondary border me-1">#{{ t }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+          <div class="d-flex gap-2">
+            <form action="{{ url_for('posts.vote_post', post_id=post.id) }}" method="POST" class="ajax-vote-form d-inline">
+              <button type="submit" class="upvote-btn {% if post.user_vote == 1 %}active{% endif %}">
+                <i class="bi bi-hand-thumbs-up me-1"></i> Upvote (<span class="vote-count">{{ post.upvote_count }}</span>)
+              </button>
+            </form>
+            <span class="text-muted small align-self-center"><i class="bi bi-chat-left-text me-1"></i> {{ post.comment_count }} Comments</span>
+          </div>
+
+          {% if current_user and (current_user.id == post.user_id or current_user.role == 'Admin') %}
+          <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST" onsubmit="return confirm('Delete this post?');">
+            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">Delete Post</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Add Comment Form -->
+      <div class="card p-3 border-0 shadow-sm mb-4 bg-white">
+        <h6 class="fw-bold mb-2">Contribute to this Academic Discussion</h6>
+        {% if current_user %}
+        <form action="{{ url_for('posts.add_comment', post_id=post.id) }}" method="POST">
+          <div class="mb-2">
+            <textarea name="content" rows="3" class="form-control" required placeholder="Share your perspective, methodological critique, or empirical verification..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4">Post Comment</button>
+        </form>
+        {% else %}
+        <p class="text-muted small mb-0"><a href="{{ url_for('auth.login') }}">Sign in</a> to contribute to this discussion.</p>
+        {% endif %}
+      </div>
+
+      <!-- Threaded Comments List -->
+      <h5 class="fw-bold mb-3">Discussion Replies ({{ post.comments|length }})</h5>
+      {% if post.comments %}
+      <div class="d-flex flex-column gap-3">
+        {% for c in post.comments %}
+        <div class="academic-card p-3">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-person-circle fs-5 text-secondary me-2"></i>
+              <div>
+                <span class="fw-bold small">{{ c.full_name }}</span>
+                <small class="text-muted">(@{{ c.username }} &bull; {{ c.user_role }}) &bull; {{ c.created_at | format_date }}</small>
+              </div>
+            </div>
+          </div>
+          <p class="text-secondary small mb-2 ps-4">{{ c.content }}</p>
+
+          <!-- Reply button toggler -->
+          {% if current_user %}
+          <div class="ps-4">
+            <button class="btn btn-link btn-sm text-secondary p-0 text-decoration-none small" type="button" data-bs-toggle="collapse" data-bs-target="#replyBox{{ c.id }}">
+              <i class="bi bi-reply me-1"></i> Reply
+            </button>
+            <div class="collapse mt-2" id="replyBox{{ c.id }}">
+              <form action="{{ url_for('posts.add_comment', post_id=post.id) }}" method="POST" class="d-flex gap-2">
+                <input type="hidden" name="parent_comment_id" value="{{ c.id }}">
+                <input type="text" name="content" class="form-control form-control-sm" required placeholder="Write a reply...">
+                <button type="submit" class="btn btn-sm btn-outline-primary">Reply</button>
+              </form>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Nested Threaded Replies -->
+          {% if c.replies %}
+          <div class="comment-thread mt-3">
+            {% for rep in c.replies %}
+            <div class="p-2 border-top">
+              <div class="d-flex align-items-center mb-1">
+                <i class="bi bi-person-circle text-muted me-1"></i>
+                <span class="fw-bold small">{{ rep.full_name }}</span>
+                <small class="text-muted ms-1">(@{{ rep.username }}) &bull; {{ rep.created_at | format_date }}</small>
+              </div>
+              <p class="text-secondary small mb-0 ps-3">{{ rep.content }}</p>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-muted small text-center py-4">No comments yet. Be the first to reply!</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

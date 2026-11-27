@@ -1,0 +1,282 @@
+[
+  {
+    "original_id": 1,
+    "original_title": "Attention Mechanisms for Efficient Vision Transformers",
+    "duplicate_id": 481,
+    "duplicate_title": "ATTENTION MECHANISMS FOR EFFICIENT VISION TRANSFORMERS",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 12,
+    "original_title": "Cross-Lingual Semantic Representation in Low-Resource Indian Languages \u2014 Phase 2: Experimental Analysis and Benchmarking",
+    "duplicate_id": 482,
+    "duplicate_title": "Cross-Lingual Semantic Representation in Low-Resource Indian Languages (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 23,
+    "original_title": "Clustering Non-Convex Clusters with Density-Based Graph Traversal \u2014 Phase 3: Experimental Analysis and Benchmarking",
+    "duplicate_id": 483,
+    "duplicate_title": "Clustering Non-Convex Clusters with Density-Based Graph Traversal \u2014 Phase 3: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 34,
+    "original_title": "Predictive Auto-Scaling for Cloud Microservices Using LSTM \u2014 Phase 5: Experimental Analysis and Benchmarking",
+    "duplicate_id": 484,
+    "duplicate_title": "A Comprehensive Study on Predictive Auto-Scaling for Cloud Microservices Using LSTM \u2014 Phase 5: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 45,
+    "original_title": "End-to-End Autonomous Driving Perception Using Occupancy Grids \u2014 Phase 6: Experimental Analysis and Benchmarking",
+    "duplicate_id": 485,
+    "duplicate_title": "END-TO-END AUTONOMOUS DRIVING PERCEPTION USING OCCUPANCY GRIDS \u2014 PHASE 6: EXPERIMENTAL ANALYSIS AND BENCHMARKING",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 56,
+    "original_title": "Real-Time Air Quality Monitoring Using LoRaWAN Sensor Meshes \u2014 Phase 7: Experimental Analysis and Benchmarking",
+    "duplicate_id": 486,
+    "duplicate_title": "Real-Time Air Quality Monitoring Using LoRaWAN Sensor Meshes (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 67,
+    "original_title": "Sub-Threshold CMOS Design for Wearable Health Monitoring Devices \u2014 Phase 9: Experimental Analysis and Benchmarking",
+    "duplicate_id": 487,
+    "duplicate_title": "Sub-Threshold CMOS Design in Wearable Health Monitoring Devices \u2014 Phase 9: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 78,
+    "original_title": "Protein-Protein Interaction Network Mining Using Node2Vec \u2014 Phase 10: Experimental Analysis and Benchmarking",
+    "duplicate_id": 488,
+    "duplicate_title": "A Comprehensive Study on Protein-Protein Interaction Network Mining Using Node2Vec \u2014 Phase 10: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 89,
+    "original_title": "Dynamic Pricing and Inventory Optimization Under Stochastic Demand \u2014 Phase 12: Experimental Analysis and Benchmarking",
+    "duplicate_id": 489,
+    "duplicate_title": "DYNAMIC PRICING AND INVENTORY OPTIMIZATION UNDER STOCHASTIC DEMAND \u2014 PHASE 12: EXPERIMENTAL ANALYSIS AND BENCHMARKING",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 100,
+    "original_title": "Fault-Tolerant Quantum Fourier Transform for Financial Modeling \u2014 Phase 13: Experimental Analysis and Benchmarking",
+    "duplicate_id": 490,
+    "duplicate_title": "Fault-Tolerant Quantum Fourier Transform for Financial Modeling (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 111,
+    "original_title": "Normalized Weight Initialization for Ultra-Deep Networks \u2014 Phase 14: Experimental Analysis and Benchmarking",
+    "duplicate_id": 491,
+    "duplicate_title": "Normalized Weight Initialization in Ultra-Deep Networks \u2014 Phase 14: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 122,
+    "original_title": "Instruction Tuning and Alignment for Domain-Specific LLMs \u2014 Phase 16: Experimental Analysis and Benchmarking",
+    "duplicate_id": 492,
+    "duplicate_title": "A Comprehensive Study on Instruction Tuning and Alignment for Domain-Specific LLMs \u2014 Phase 16: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 133,
+    "original_title": "Dimensionality Reduction via Variational Autoencoders and UMAP \u2014 Phase 17: Experimental Analysis and Benchmarking",
+    "duplicate_id": 493,
+    "duplicate_title": "DIMENSIONALITY REDUCTION VIA VARIATIONAL AUTOENCODERS AND UMAP \u2014 PHASE 17: EXPERIMENTAL ANALYSIS AND BENCHMARKING",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 144,
+    "original_title": "Load Balancing Across Hybrid Multi-Cloud Academic Environments \u2014 Phase 18: Experimental Analysis and Benchmarking",
+    "duplicate_id": 494,
+    "duplicate_title": "Load Balancing Across Hybrid Multi-Cloud Academic Environments (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 155,
+    "original_title": "Self-Attention Diffusion Models for High-Fidelity Medical Imaging \u2014 Phase 20: Experimental Analysis and Benchmarking",
+    "duplicate_id": 495,
+    "duplicate_title": "Self-Attention Diffusion Models in High-Fidelity Medical Imaging \u2014 Phase 20: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 166,
+    "original_title": "Edge-Cloud Collaborative Inference for Autonomous Drone Fleets \u2014 Phase 21: Experimental Analysis and Benchmarking",
+    "duplicate_id": 496,
+    "duplicate_title": "A Comprehensive Study on Edge-Cloud Collaborative Inference for Autonomous Drone Fleets \u2014 Phase 21: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 177,
+    "original_title": "Compute-in-Memory Architecture Using Resistive RAM Arrays \u2014 Phase 23: Experimental Analysis and Benchmarking",
+    "duplicate_id": 497,
+    "duplicate_title": "COMPUTE-IN-MEMORY ARCHITECTURE USING RESISTIVE RAM ARRAYS \u2014 PHASE 23: EXPERIMENTAL ANALYSIS AND BENCHMARKING",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 188,
+    "original_title": "Metagenomic Species Abundance Estimation via K-mer Counting \u2014 Phase 24: Experimental Analysis and Benchmarking",
+    "duplicate_id": 498,
+    "duplicate_title": "Metagenomic Species Abundance Estimation via K-mer Counting (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 199,
+    "original_title": "Predictive Maintenance Scheduling Using Survival Analysis Models \u2014 Phase 25: Experimental Analysis and Benchmarking",
+    "duplicate_id": 499,
+    "duplicate_title": "Predictive Maintenance Scheduling Using Survival Analysis Models \u2014 Phase 25: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 210,
+    "original_title": "Barren Plateaus Mitigation in Quantum Neural Network Training \u2014 Phase 27: Experimental Analysis and Benchmarking",
+    "duplicate_id": 500,
+    "duplicate_title": "A Comprehensive Study on Barren Plateaus Mitigation in Quantum Neural Network Training \u2014 Phase 27: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 221,
+    "original_title": "Parameter-Efficient Fine-Tuning of Foundation Models \u2014 Phase 28: Experimental Analysis and Benchmarking",
+    "duplicate_id": 501,
+    "duplicate_title": "PARAMETER-EFFICIENT FINE-TUNING OF FOUNDATION MODELS \u2014 PHASE 28: EXPERIMENTAL ANALYSIS AND BENCHMARKING",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 232,
+    "original_title": "Prompt Optimization and Chain-of-Thought Reasoning in Code Models \u2014 Phase 29: Experimental Analysis and Benchmarking",
+    "duplicate_id": 502,
+    "duplicate_title": "Prompt Optimization and Chain-of-Thought Reasoning in Code Models (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 243,
+    "original_title": "Graph Neural Networks for Node Classification in Academic Networks \u2014 Phase 31: Experimental Analysis and Benchmarking",
+    "duplicate_id": 503,
+    "duplicate_title": "Graph Neural Networks in Node Classification in Academic Networks \u2014 Phase 31: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 254,
+    "original_title": "Consensus-Driven Decentralized Identity Systems \u2014 Phase 32: Experimental Analysis and Benchmarking",
+    "duplicate_id": 504,
+    "duplicate_title": "A Comprehensive Study on Consensus-Driven Decentralized Identity Systems \u2014 Phase 32: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 265,
+    "original_title": "Real-Time Object Detection on Edge Embedded Platforms \u2014 Phase 34: Experimental Analysis and Benchmarking",
+    "duplicate_id": 505,
+    "duplicate_title": "REAL-TIME OBJECT DETECTION ON EDGE EMBEDDED PLATFORMS \u2014 PHASE 34: EXPERIMENTAL ANALYSIS AND BENCHMARKING",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 276,
+    "original_title": "Intrusion Detection in Industrial IoT Using Ensemble Tree Models \u2014 Phase 35: Experimental Analysis and Benchmarking",
+    "duplicate_id": 506,
+    "duplicate_title": "Intrusion Detection in Industrial IoT Using Ensemble Tree Models (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 287,
+    "original_title": "Hardware-Accelerated Homomorphic Encryption Coprocessors \u2014 Phase 36: Experimental Analysis and Benchmarking",
+    "duplicate_id": 507,
+    "duplicate_title": "Hardware-Accelerated Homomorphic Encryption Coprocessors \u2014 Phase 36: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 298,
+    "original_title": "Deep Learning for Alternative Splicing Prediction from RNA-Seq \u2014 Phase 38: Experimental Analysis and Benchmarking",
+    "duplicate_id": 508,
+    "duplicate_title": "A Comprehensive Study on Deep Learning for Alternative Splicing Prediction from RNA-Seq \u2014 Phase 38: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 309,
+    "original_title": "Game-Theoretic Resource Allocation in Carbon Offset Markets \u2014 Phase 39: Experimental Analysis and Benchmarking",
+    "duplicate_id": 509,
+    "duplicate_title": "GAME-THEORETIC RESOURCE ALLOCATION IN CARBON OFFSET MARKETS \u2014 PHASE 39: EXPERIMENTAL ANALYSIS AND BENCHMARKING",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 320,
+    "original_title": "Tensor Network Simulations of Quantum Many-Body Dynamics \u2014 Phase 40: Experimental Analysis and Benchmarking",
+    "duplicate_id": 510,
+    "duplicate_title": "Tensor Network Simulations of Quantum Many-Body Dynamics (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 331,
+    "original_title": "Gradient Regularization and Generalization in Deep ResNets \u2014 Phase 42: Experimental Analysis and Benchmarking",
+    "duplicate_id": 511,
+    "duplicate_title": "Gradient Regularization & Generalization in Deep ResNets \u2014 Phase 42: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 342,
+    "original_title": "Contrastive Learning for Scientific Abstract Summarization \u2014 Phase 43: Experimental Analysis and Benchmarking",
+    "duplicate_id": 512,
+    "duplicate_title": "A Comprehensive Study on Contrastive Learning for Scientific Abstract Summarization \u2014 Phase 43: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 353,
+    "original_title": "High-Utility Frequent Itemset Mining on Stream Data \u2014 Phase 45: Experimental Analysis and Benchmarking",
+    "duplicate_id": 513,
+    "duplicate_title": "HIGH-UTILITY FREQUENT ITEMSET MINING ON STREAM DATA \u2014 PHASE 45: EXPERIMENTAL ANALYSIS AND BENCHMARKING",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 364,
+    "original_title": "Fault-Tolerant Distributed Storage with Erasure Coding \u2014 Phase 46: Experimental Analysis and Benchmarking",
+    "duplicate_id": 514,
+    "duplicate_title": "Fault-Tolerant Distributed Storage with Erasure Coding (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 375,
+    "original_title": "Robust Feature Matching Under Severe Illumination Variations \u2014 Phase 47: Experimental Analysis and Benchmarking",
+    "duplicate_id": 515,
+    "duplicate_title": "Robust Feature Matching Under Severe Illumination Variations \u2014 Phase 47: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 386,
+    "original_title": "Energy Harvesting Protocols for Ultra-Low Power Sensor Nodes \u2014 Phase 49: Experimental Analysis and Benchmarking",
+    "duplicate_id": 516,
+    "duplicate_title": "A Comprehensive Study on Energy Harvesting Protocols for Ultra-Low Power Sensor Nodes \u2014 Phase 49: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 397,
+    "original_title": "Thermal-Aware Floorplanning for 3D Integrated Circuit Stacks \u2014 Phase 50: Experimental Analysis and Benchmarking",
+    "duplicate_id": 517,
+    "duplicate_title": "THERMAL-AWARE FLOORPLANNING FOR 3D INTEGRATED CIRCUIT STACKS \u2014 PHASE 50: EXPERIMENTAL ANALYSIS AND BENCHMARKING",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 8,
+    "original_title": "Genome-Wide Association Study of Metabolic Biomarkers in Populations",
+    "duplicate_id": 518,
+    "duplicate_title": "Genome-Wide Association Study of Metabolic Biomarkers in Populations (Extended Technical Report)",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 19,
+    "original_title": "Multi-Objective Portfolio Optimization Using Genetic Algorithms \u2014 Phase 3: Experimental Analysis and Benchmarking",
+    "duplicate_id": 519,
+    "duplicate_title": "Multi-Objective Portfolio Optimization Using Genetic Algorithms \u2014 Phase 3: Experimental Analysis & Benchmarking",
+    "relation": "planted_duplicate"
+  },
+  {
+    "original_id": 30,
+    "original_title": "Hybrid Classical-Quantum Convolutional Architectures for Vision \u2014 Phase 4: Experimental Analysis and Benchmarking",
+    "duplicate_id": 520,
+    "duplicate_title": "A Comprehensive Study on Hybrid Classical-Quantum Convolutional Architectures for Vision \u2014 Phase 4: Experimental Analysis and Benchmarking",
+    "relation": "planted_duplicate"
+  }
+]

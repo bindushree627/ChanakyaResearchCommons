@@ -1,0 +1,10 @@
+[
+  {
+    "topic_name": "Quantum Machine Learning",
+    "topic_id": 10,
+    "spike_start_day": 155,
+    "spike_end_day": 184,
+    "spike_multiplier": 5.2,
+    "description": "Sudden 5x surge in Quantum ML papers, searches, and library saves following international conference announcements."
+  }
+]

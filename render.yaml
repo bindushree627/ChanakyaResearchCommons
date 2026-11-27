@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: chanakya-research-commons
+    runtime: python
+    plan: starter
+    region: singapore
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    preDeployCommand: python scripts/setup_local_db.py
+    startCommand: gunicorn --workers 1 --threads 4 --timeout 180 --bind 0.0.0.0:$PORT 'app:create_app("production")'
+    healthCheckPath: /login
+    disk:
+      name: chanakya-data
+      mountPath: /app/data
+      sizeGB: 2
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.0
+      - key: FLASK_APP
+        value: app:create_app
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: EMBEDDING_MODEL_NAME
+        value: all-MiniLM-L6-v2
+      - key: USE_OLLAMA
+        value: "false"

@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-11-25T14:14:45.050807",
+  "subsystem_evaluations": {
+    "search": {
+      "BM25_Keyword": {
+        "Precision@5": 0.61,
+        "Precision@10": 0.605,
+        "Recall@10": 0.1163,
+        "nDCG@10": 0.6043
+      },
+      "Semantic_Dense": {
+        "Precision@5": 0.11,
+        "Precision@10": 0.09,
+        "Recall@10": 0.0173,
+        "nDCG@10": 0.1095
+      },
+      "Hybrid_RRF": {
+        "Precision@5": 0.36,
+        "Precision@10": 0.35,
+        "Recall@10": 0.0673,
+        "nDCG@10": 0.3598
+      }
+    },
+    "duplicate_detection": {
+      "GroundTruthCount": 40,
+      "DetectedCount": 30,
+      "TruePositives": 30,
+      "FalsePositives": 0,
+      "FalseNegatives": 10,
+      "Precision": 1.0,
+      "Recall": 0.75,
+      "F1_Score": 0.8571
+    },
+    "recommendations": {
+      "Global_Popularity_Baseline": {
+        "Precision@5": 0.52,
+        "Precision@10": 0.52,
+        "Recall@10": 0.26,
+        "CatalogCoverage_Pct": 1.92
+      },
+      "Content_Based_Filtering": {
+        "Precision@5": 0.04,
+        "Precision@10": 0.052,
+        "Recall@10": 0.026,
+        "CatalogCoverage_Pct": 21.54
+      },
+      "Collaborative_Filtering_SVD": {
+        "Precision@5": 0.712,
+        "Precision@10": 0.672,
+        "Recall@10": 0.336,
+        "CatalogCoverage_Pct": 38.65
+      },
+      "Cold_Start_Strategy": {
+        "Delivery_Success_Rate": 1.0
+      }
+    },
+    "trend_detection": {
+      "PlantedSpikes": 1,
+      "DetectedSpikes": 1,
+      "TruePositives": 1,
+      "FalsePositives": 0,
+      "FalseNegatives": 0,
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1_Score": 1.0,
+      "MeanDetectionDelayDays": 3.2
+    },
+    "spam_detection": {
+      "TotalUsers": 60,
+      "PlantedSpam": 5,
+      "ConfusionMatrix": {
+        "TruePositives": 5,
+        "FalsePositives": 1,
+        "FalseNegatives": 0,
+        "TrueNegatives": 54
+      },
+      "Precision": 0.8333,
+      "Recall": 1.0,
+      "F1_Score": 0.9091,
+      "Accuracy": 0.9833
+    },
+    "research_assistant_rag": {
+      "Retrieval_Precision@5": 0.2,
+      "Retrieval_Recall@5": 0.3333,
+      "Citation_Coverage": 0.2,
+      "Groundedness_Score": 1.0
+    }
+  }
+}

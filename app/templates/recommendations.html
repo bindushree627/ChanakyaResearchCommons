@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Recommendations — Chanakya Research Commons{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Personalized Research Recommendations</h2>
+      <p class="text-muted small mb-0">
+        Multi-model recommendation engine: Content-Based Semantic Alignment, TruncatedSVD Collaborative Filtering, and FP-Growth Association Rules.
+      </p>
+    </div>
+    {% if is_cold_start and current_user %}
+    <span class="badge bg-info-subtle text-info border border-info px-3 py-2 rounded-pill small">
+      <i class="bi bi-compass me-1"></i> Cold-Start Mode Active
+    </span>
+    {% endif %}
+  </div>
+
+  {% if is_cold_start %}
+  <div class="alert alert-info border-0 shadow-sm mb-4">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+      <div>
+        <h6 class="fw-bold mb-1">Cold-Start Academic Discovery</h6>
+        <p class="mb-0 small">
+          Welcome to Chanakya Research Commons! Because your account is new, recommendations are currently prioritized based on high-yield departmental readership.
+          <a href="{{ url_for('auth.settings') }}" class="fw-bold text-dark text-decoration-underline">Select research interest tags in Settings</a> or save papers to activate personalized vector embeddings.
+        </p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Section 1: Content-Based Profile Recommendations -->
+  <div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h4 class="fw-bold mb-0">1. Recommended Papers (Content-Based)</h4>
+        <small class="text-muted">Synthesized from your declared research interest tags and saved paper embeddings.</small>
+      </div>
+      <span class="badge bg-primary-subtle text-primary border small">Cosine Embedding Profile</span>
+    </div>
+
+    {% if content_recs %}
+    <div class="row g-3">
+      {% for p in content_recs %}
+      <div class="col-md-6">
+        <div class="academic-card p-3 h-100 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="badge bg-light text-dark border small">{{ p.venue }} ({{ p.publication_year }})</span>
+            <span class="badge badge-score">{{ (p.score * 100)|round|int }}% Alignment</span>
+          </div>
+          <h6 class="fw-bold mb-1">
+            <a href="{{ url_for('library.paper_detail', paper_id=p.paper_id) }}" class="text-decoration-none text-dark">
+              {{ p.title }}
+            </a>
+          </h6>
+          <div class="p-2 my-2 bg-light rounded border small text-muted flex-grow-1">
+            <i class="bi bi-lightbulb text-warning me-1"></i>
+            <strong>Explanation:</strong> {{ p.explanation }}
+          </div>
+          <div class="pt-2 border-top d-flex justify-content-between align-items-center">
+            <small class="text-muted">Paper ID: #{{ p.paper_id }}</small>
+            <a href="{{ url_for('library.paper_detail', paper_id=p.paper_id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+              Explore Paper
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Section 2: Collaborative Filtering (TruncatedSVD) -->
+  {% if cf_recs %}
+  <div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h4 class="fw-bold mb-0">2. Latent Community Recommendations (Collaborative SVD)</h4>
+        <small class="text-muted">Discovered by factorizing the institutional User-Paper save matrix across Chanakya researchers.</small>
+      </div>
+      <span class="badge bg-success-subtle text-success border small">TruncatedSVD Matrix Factorization</span>
+    </div>
+
+    <div class="row g-3">
+      {% for p in cf_recs %}
+      <div class="col-md-6 col-lg-4">
+        <div class="academic-card p-3 h-100 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="badge bg-light text-dark border small">{{ p.publication_year }}</span>
+            <span class="badge bg-success text-white small">Latent Score: {{ p.score }}</span>
+          </div>
+          <h6 class="fw-bold mb-1">
+            <a href="{{ url_for('library.paper_detail', paper_id=p.paper_id) }}" class="text-decoration-none text-dark">
+              {{ p.title }}
+            </a>
+          </h6>
+          <p class="text-muted small mb-2">{{ p.venue }}</p>
+          <div class="p-2 my-2 bg-light rounded border small text-muted flex-grow-1">
+            <i class="bi bi-people text-success me-1"></i>
+            <strong>Community Factor:</strong> {{ p.explanation }}
+          </div>
+          <a href="{{ url_for('library.paper_detail', paper_id=p.paper_id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3 mt-2">
+            View Paper
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Section 3: Recommended Researchers & Collaborators -->
+  {% if researcher_recs %}
+  <div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h4 class="fw-bold mb-0">3. Recommended Researchers & Collaborators</h4>
+        <small class="text-muted">Faculty and student colleagues with high research interest overlap.</small>
+      </div>
+      <span class="badge bg-warning-subtle text-warning-emphasis border small">Graph Synergy</span>
+    </div>
+
+    <div class="row g-3">
+      {% for r in researcher_recs %}
+      <div class="col-md-6 col-lg-4">
+        <div class="academic-card p-3 h-100 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-person-circle fs-3 text-primary me-2"></i>
+              <div>
+                <h6 class="fw-bold mb-0">
+                  <a href="{{ url_for('auth.user_profile', user_id=r.user_id) }}" class="text-dark text-decoration-none">
+                    {{ r.full_name }}
+                  </a>
+                </h6>
+                <small class="text-muted">@{{ r.username }} &bull; {{ r.role }}</small>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-primary rounded-pill px-3 ajax-follow-btn" data-user-id="{{ r.user_id }}" data-following="false">
+              Follow
+            </button>
+          </div>
+          <p class="text-muted small mb-2">{{ r.department }}</p>
+          <div class="p-2 bg-light rounded border small text-secondary flex-grow-1">
+            <i class="bi bi-link-45deg text-primary me-1"></i> {{ r.explanation }}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

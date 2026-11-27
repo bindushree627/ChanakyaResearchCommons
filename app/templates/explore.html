@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% block title %}Explore Research — 4-Panel Unified Hybrid Search{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Search Header & Formula Note -->
+  <div class="row align-items-center mb-4">
+    <div class="col-lg-8">
+      <h2 class="fw-bold mb-1">Explore Research</h2>
+      <p class="text-muted small mb-0">
+        Unified 4-panel hybrid information retrieval uniting Okapi BM25 keyword matching with dense sentence vector embeddings via Reciprocal Rank Fusion (RRF).
+      </p>
+    </div>
+    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+      <button class="btn btn-outline-secondary btn-sm rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#formulaBox">
+        <i class="bi bi-info-circle me-1"></i> Ranking Formula
+      </button>
+    </div>
+  </div>
+
+  <!-- Collapsible Mathematical Formulation Box -->
+  <div class="collapse mb-4" id="formulaBox">
+    <div class="card card-body bg-light border-0 shadow-sm">
+      <h6 class="fw-bold text-primary mb-1">Measurable Hybrid Ranking Formula (RRF):</h6>
+      <p class="small text-secondary mb-2">
+        <code>Score_RRF(d) = &sum; [ 1 / (60 + rank_m(d)) ]</code> where <code>m &isin; {BM25_Lexical, MiniLM_Semantic}</code>.
+      </p>
+      <small class="text-muted">
+        BM25 ensures exact acronym, terminology, and author matching, while dense 384-dimensional cosine similarity captures conceptual intent. RRF provides scale-invariant fusion superior to raw score addition.
+      </small>
+    </div>
+  </div>
+
+  <!-- Search Input Bar -->
+  <form action="{{ url_for('search.explore') }}" method="GET" class="card p-3 shadow-sm mb-4 border-0">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-9">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" name="q" class="form-control border-start-0 ps-1"
+                 placeholder="Search across all 520 papers, library saves, faculty members, and research posts..."
+                 value="{{ query_text }}">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-primary w-100 fw-semibold">
+          <i class="bi bi-arrow-repeat me-1"></i> Run Unified Search
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Accordion -->
+    <div class="row g-2 mt-2 pt-2 border-top">
+      <div class="col-md-4">
+        <select name="topic_id" class="form-select form-select-sm">
+          <option value="">All Research Areas</option>
+          {% for t in topics %}
+          <option value="{{ t.id }}" {% if selected_topic == t.id|string %}selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select name="year" class="form-select form-select-sm">
+          <option value="">All Publication Years</option>
+          {% for y in years %}
+          <option value="{{ y }}" {% if selected_year == y|string %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <select name="dept_id" class="form-select form-select-sm">
+          <option value="">All Departments</option>
+          {% for d in departments %}
+          <option value="{{ d.id }}" {% if selected_dept == d.id|string %}selected{% endif %}>{{ d.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </form>
+
+  {% if query_text %}
+  <!-- Search Results Tabs (4 Integrated Panels) -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="text-muted small">Showing results for <strong>"{{ query_text }}"</strong> ({{ results.total_matches }} total matches)</span>
+  </div>
+
+  <ul class="nav nav-pills mb-4" id="searchTabs" role="tablist">
+    <li class="nav-item">
+      <button class="nav-link active rounded-pill px-3" data-bs-toggle="tab" data-bs-target="#panel-papers">
+        <i class="bi bi-file-earmark-text me-1"></i> Scholarly Papers ({{ results.panel_papers|length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link rounded-pill px-3" data-bs-toggle="tab" data-bs-target="#panel-library">
+        <i class="bi bi-bookmark-star me-1"></i> University Library ({{ results.panel_library|length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link rounded-pill px-3" data-bs-toggle="tab" data-bs-target="#panel-members">
+        <i class="bi bi-people me-1"></i> Researchers & Faculty ({{ results.panel_members|length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link rounded-pill px-3" data-bs-toggle="tab" data-bs-target="#panel-posts">
+        <i class="bi bi-chat-square-text me-1"></i> Community Posts ({{ results.panel_posts|length }})
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- Panel 1: Scholarly Papers -->
+    <div class="tab-pane fade show active" id="panel-papers">
+      {% if results.panel_papers %}
+      <div class="row g-3">
+        {% for p in results.panel_papers %}
+        <div class="col-12">
+          <div class="academic-card p-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <span class="badge badge-topic me-2">{{ p.topic_name }}</span>
+                <span class="badge badge-score me-2">Hybrid Relevance: {{ p.relevance_score }}%</span>
+                {% for s in p.sources %}
+                <span class="badge badge-source">{{ s.source_name }}</span>
+                {% endfor %}
+              </div>
+              <small class="text-muted"><i class="bi bi-quote"></i> {{ p.citation_count }} citations</small>
+            </div>
+            <h5 class="fw-bold mb-1">
+              <a href="{{ url_for('library.paper_detail', paper_id=p.id) }}" class="text-decoration-none text-dark">
+                {{ p.title }}
+              </a>
+            </h5>
+            <p class="text-muted small mb-2">
+              {% for a in p.authors %}{{ a.author_name }}{% if not loop.last %}, {% endif %}{% endfor %}
+              &bull; {{ p.publication_year }} &bull; {{ p.venue }}
+              {% if p.doi %}&bull; <span class="font-monospace">DOI: {{ p.doi }}</span>{% endif %}
+            </p>
+            <p class="text-secondary small mb-3">
+              {{ p.abstract | truncate_chars(250) }}
+            </p>
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+              <small class="text-muted">Saved by {{ p.save_count }} Chanakya researchers</small>
+              <div class="d-flex gap-2">
+                <a href="{{ url_for('library.paper_detail', paper_id=p.id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                  View Paper & Notes
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-5 text-muted">
+        <i class="bi bi-search fs-1 text-secondary mb-2"></i>
+        <p>No papers matching the specified criteria in Panel 1.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Panel 2: Saved University Library Papers -->
+    <div class="tab-pane fade" id="panel-library">
+      {% if results.panel_library %}
+      <div class="row g-3">
+        {% for p in results.panel_library %}
+        <div class="col-12">
+          <div class="academic-card p-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">In University Library ({{ p.save_count }} saves)</span>
+              <span class="badge badge-score">{{ p.relevance_score }}% Match</span>
+            </div>
+            <h5 class="fw-bold mb-1">
+              <a href="{{ url_for('library.paper_detail', paper_id=p.id) }}" class="text-decoration-none text-dark">{{ p.title }}</a>
+            </h5>
+            <p class="text-muted small mb-2">{{ p.venue }} ({{ p.publication_year }})</p>
+            <p class="text-secondary small">{{ p.abstract | truncate_chars(200) }}</p>
+            <a href="{{ url_for('library.paper_detail', paper_id=p.id) }}" class="btn btn-sm btn-primary rounded-pill px-3">
+              Open Library Record
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-5 text-muted">
+        <p>None of the retrieved papers are currently saved in member libraries.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Panel 3: University Members Working in Related Areas -->
+    <div class="tab-pane fade" id="panel-members">
+      {% if results.panel_members %}
+      <div class="row g-3">
+        {% for m in results.panel_members %}
+        <div class="col-md-6">
+          <div class="academic-card p-3 h-100 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-person-circle fs-3 text-primary me-2"></i>
+                <div>
+                  <h6 class="fw-bold mb-0">
+                    <a href="{{ url_for('auth.user_profile', user_id=m.id) }}" class="text-decoration-none text-dark">
+                      {{ m.full_name }}
+                    </a>
+                  </h6>
+                  <small class="text-muted">@{{ m.username }} &bull; {{ m.role }}</small>
+                </div>
+              </div>
+              {% if current_user and current_user.id != m.id %}
+              <button class="btn btn-sm {% if m.is_following %}btn-outline-secondary{% else %}btn-primary{% endif %} rounded-pill px-3 ajax-follow-btn"
+                      data-user-id="{{ m.id }}" data-following="{{ 'true' if m.is_following else 'false' }}">
+                {{ 'Following' if m.is_following else 'Follow' }}
+              </button>
+              {% endif %}
+            </div>
+            <p class="text-muted small mb-2">{{ m.department_name }}</p>
+            <p class="text-secondary small flex-grow-1">{{ m.bio | truncate_chars(120) }}</p>
+            {% if m.interests %}
+            <div class="pt-2 border-top">
+              <small class="text-muted fw-semibold">Interests: </small>
+              <small class="text-primary">{{ m.interests }}</small>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-5 text-muted">
+        <p>No faculty or researchers found matching query keywords.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Panel 4: Research Posts and Community Discussions -->
+    <div class="tab-pane fade" id="panel-posts">
+      {% if results.panel_posts %}
+      <div class="row g-3">
+        {% for post in results.panel_posts %}
+        <div class="col-12">
+          <div class="academic-card p-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="badge badge-topic">{{ post.topic_name }}</span>
+              <small class="text-muted"><i class="bi bi-hand-thumbs-up"></i> {{ post.upvote_count }} upvotes &bull; {{ post.comment_count }} comments</small>
+            </div>
+            <h5 class="fw-bold mb-1">
+              <a href="{{ url_for('posts.post_detail', post_id=post.id) }}" class="text-decoration-none text-dark">{{ post.title }}</a>
+            </h5>
+            <p class="text-muted small mb-2">Posted by {{ post.author_name }} (@{{ post.username }}) on {{ post.created_at | format_date }}</p>
+            <p class="text-secondary small">{{ post.content | truncate_chars(200) }}</p>
+            <a href="{{ url_for('posts.post_detail', post_id=post.id) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+              Join Discussion
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-5 text-muted">
+        <p>No community discussion posts matching this query.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% else %}
+  <!-- Empty State Search Guidance -->
+  <div class="card p-5 text-center bg-white shadow-sm border-0">
+    <div class="py-4">
+      <i class="bi bi-search fs-1 text-primary mb-3"></i>
+      <h4 class="fw-bold">Search Across Chanakya Research Commons</h4>
+      <p class="text-muted mx-auto" style="max-width: 520px;">
+        Type any query to activate the 4-panel hybrid ranker: scholarly literature, institutional library saves, faculty members, and research posts.
+      </p>
+      <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+        <a href="{{ url_for('search.explore', q='vision transformer attention') }}" class="btn btn-sm btn-light border rounded-pill">"vision transformer attention"</a>
+        <a href="{{ url_for('search.explore', q='frequent itemset mining fp growth') }}" class="btn btn-sm btn-light border rounded-pill">"frequent itemset mining"</a>
+        <a href="{{ url_for('search.explore', q='quantum machine learning') }}" class="btn btn-sm btn-light border rounded-pill">"quantum machine learning"</a>
+        <a href="{{ url_for('search.explore', q='edge computing lorawan iot') }}" class="btn btn-sm btn-light border rounded-pill">"edge computing iot"</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

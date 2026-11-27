@@ -1,0 +1,614 @@
+{% extends "base.html" %}
+{% block title %}Administrator Analytics — Chanakya Research Commons{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+  <!-- Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <h2 class="fw-bold mb-0">Administrator Analytics &amp; Monitoring</h2>
+        <span class="badge bg-danger rounded-pill px-3">Admin Only</span>
+      </div>
+      <p class="text-muted small mb-0">
+        Live platform statistics, DuckDB OLAP analytics, and privacy-preserving record inspection.
+      </p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{{ url_for('analytics.admin_records_view', record_type='papers') }}" class="btn btn-outline-primary btn-sm rounded-pill">
+        <i class="bi bi-table me-1"></i> Inspect Records
+      </a>
+      <a href="{{ url_for('evaluation.evaluation_dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+        <i class="bi bi-graph-up me-1"></i> Benchmarks
+      </a>
+    </div>
+  </div>
+
+  <!-- Admin Alerts Banner (F7) -->
+  {% if spam_alerts %}
+  <div class="alert alert-warning border-0 shadow-sm mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-shield-exclamation text-warning fs-3 me-3"></i>
+        <div>
+          <h6 class="fw-bold mb-0">Security &amp; Abnormal Activity Alerts ({{ spam_alerts|length }})</h6>
+          <small class="text-secondary">Isolation Forest detected burst posting or promotional keyword violations.</small>
+        </div>
+      </div>
+      <a href="#spamMonitoringSection" class="btn btn-sm btn-outline-dark rounded-pill px-3">Review Accounts</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Global Filter Bar -->
+  <form method="GET" action="{{ url_for('analytics.analytics_dashboard') }}" class="academic-card p-3 mb-4">
+    <div class="row g-2 align-items-end">
+      <div class="col-6 col-md-2">
+        <label class="form-label small fw-semibold mb-1">Start Date</label>
+        <input type="date" name="start_date" value="{{ filters.start_date }}" class="form-control form-control-sm">
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small fw-semibold mb-1">End Date</label>
+        <input type="date" name="end_date" value="{{ filters.end_date }}" class="form-control form-control-sm">
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small fw-semibold mb-1">Department</label>
+        <select name="department_id" class="form-select form-select-sm">
+          <option value="">All Departments</option>
+          {% for d in departments %}
+          <option value="{{ d.id }}" {% if filters.department_id == d.id|string %}selected{% endif %}>{{ d.code }} — {{ d.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small fw-semibold mb-1">User Role</label>
+        <select name="role" class="form-select form-select-sm">
+          <option value="">All Roles</option>
+          {% for rname in ['Student', 'Faculty', 'Researcher', 'Admin'] %}
+          <option value="{{ rname }}" {% if filters.role == rname %}selected{% endif %}>{{ rname }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small fw-semibold mb-1">Research Topic</label>
+        <select name="topic_id" class="form-select form-select-sm">
+          <option value="">All Topics</option>
+          {% for t in all_topics %}
+          <option value="{{ t.id }}" {% if filters.topic_id == t.id|string %}selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small fw-semibold mb-1">Activity Type</label>
+        <select name="event_type" class="form-select form-select-sm">
+          <option value="">All Events</option>
+          {% for et in ['view_paper', 'save_paper', 'search', 'post', 'comment', 'upvote'] %}
+          <option value="{{ et }}" {% if filters.event_type == et %}selected{% endif %}>{{ et }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end gap-2 mt-2">
+      <a href="{{ url_for('analytics.analytics_dashboard') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
+      <button type="submit" class="btn btn-sm btn-primary px-3"><i class="bi bi-funnel me-1"></i> Apply Filters</button>
+    </div>
+  </form>
+
+  <!-- Clickable Primary KPI Cards (Live Database Counts) -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{{ url_for('analytics.admin_records_view', record_type='papers') }}" class="text-decoration-none">
+        <div class="kpi-card shadow-sm h-100">
+          <div class="kpi-value text-primary">{{ admin_stats.research.total_papers }}</div>
+          <div class="kpi-label"><i class="bi bi-file-earmark-text me-1"></i> Total Papers</div>
+          <small class="text-primary d-block mt-1">Inspect &rarr;</small>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{{ url_for('analytics.admin_records_view', record_type='members') }}" class="text-decoration-none">
+        <div class="kpi-card shadow-sm h-100">
+          <div class="kpi-value text-success">{{ admin_stats.members.total_members }}</div>
+          <div class="kpi-label"><i class="bi bi-people me-1"></i> Total Members</div>
+          <small class="text-success d-block mt-1">Inspect &rarr;</small>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{{ url_for('analytics.admin_records_view', record_type='posts') }}" class="text-decoration-none">
+        <div class="kpi-card shadow-sm h-100">
+          <div class="kpi-value text-info">{{ admin_stats.community.total_posts }}</div>
+          <div class="kpi-label"><i class="bi bi-chat-square-text me-1"></i> Total Posts</div>
+          <small class="text-info d-block mt-1">Inspect &rarr;</small>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{{ url_for('analytics.admin_records_view', record_type='comments') }}" class="text-decoration-none">
+        <div class="kpi-card shadow-sm h-100">
+          <div class="kpi-value text-secondary">{{ admin_stats.community.total_comments }}</div>
+          <div class="kpi-label"><i class="bi bi-chat-left-text me-1"></i> Total Comments</div>
+          <small class="text-secondary d-block mt-1">Inspect &rarr;</small>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{{ url_for('analytics.admin_records_view', record_type='replies') }}" class="text-decoration-none">
+        <div class="kpi-card shadow-sm h-100">
+          <div class="kpi-value text-dark">{{ admin_stats.community.total_replies }}</div>
+          <div class="kpi-label"><i class="bi bi-reply me-1"></i> Total Replies</div>
+          <small class="text-dark d-block mt-1">Inspect &rarr;</small>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <a href="{{ url_for('analytics.admin_records_view', record_type='saves') }}" class="text-decoration-none">
+        <div class="kpi-card shadow-sm h-100">
+          <div class="kpi-value text-warning">{{ admin_stats.library.total_saves }}</div>
+          <div class="kpi-label"><i class="bi bi-bookmark-star me-1"></i> Library Saves</div>
+          <small class="text-warning d-block mt-1">Inspect &rarr;</small>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Secondary Breakdown Row (Roles, Events, Collections) -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="academic-card p-3 h-100">
+        <h6 class="fw-bold mb-2 small text-uppercase text-muted">Member Breakdown by Role</h6>
+        <div class="d-flex flex-wrap gap-3">
+          <div><span class="badge bg-primary">Students</span> <strong>{{ admin_stats.members.students }}</strong></div>
+          <div><span class="badge bg-success">Faculty</span> <strong>{{ admin_stats.members.faculty }}</strong></div>
+          <div><span class="badge bg-info text-dark">Researchers</span> <strong>{{ admin_stats.members.researchers }}</strong></div>
+          <div><span class="badge bg-danger">Admins</span> <strong>{{ admin_stats.members.admins }}</strong></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="academic-card p-3 h-100">
+        <h6 class="fw-bold mb-2 small text-uppercase text-muted">Platform Activity &amp; Collections (Filtered)</h6>
+        <div class="d-flex flex-wrap gap-3">
+          <div><span class="badge bg-light text-dark border">Events</span> <strong>{{ admin_stats.activity.total_events }}</strong></div>
+          <div><span class="badge bg-light text-dark border">Views</span> <strong>{{ admin_stats.activity.total_views }}</strong></div>
+          <div><span class="badge bg-light text-dark border">Searches</span> <strong>{{ admin_stats.activity.total_searches }}</strong></div>
+          <div><span class="badge bg-light text-dark border">Save Events</span> <strong>{{ admin_stats.activity.total_save_events }}</strong></div>
+          <div><span class="badge bg-light text-dark border">Collections</span> <strong>{{ admin_stats.library.total_collections }}</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 1: Activity Over Time & Role Distribution -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-8">
+      <div class="academic-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold mb-0"><i class="bi bi-graph-up text-primary me-2"></i>Platform Activity &amp; Active Members Over Time</h6>
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-primary active" data-time-gran="month">Monthly</button>
+            <button type="button" class="btn btn-outline-primary" data-time-gran="week">Weekly</button>
+            <button type="button" class="btn btn-outline-primary" data-time-gran="day">Daily (30d)</button>
+          </div>
+        </div>
+        <div style="height: 280px;">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="academic-card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart text-primary me-2"></i>Member Role Distribution</h6>
+        <div style="height: 280px;">
+          <canvas id="rolePieChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 2: Department Comparison & Papers by Source -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-7">
+      <div class="academic-card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-bar-chart text-primary me-2"></i>Department Comparison (Members, Posts &amp; Saves)</h6>
+        <div style="height: 270px;">
+          <canvas id="deptBarChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="academic-card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-database text-primary me-2"></i>Papers by Source</h6>
+        <div style="height: 270px;">
+          <canvas id="sourceBarChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Most Saved Papers & Most Discussed Posts -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="academic-card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-trophy text-warning me-2"></i>Most Saved Research Papers</h6>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle small mb-0">
+            <thead class="table-light">
+              <tr><th>Paper</th><th>Year</th><th>Saves</th></tr>
+            </thead>
+            <tbody>
+              {% for p in admin_stats.library.most_saved_papers %}
+              <tr>
+                <td><a href="{{ url_for('library.paper_detail', paper_id=p.paper_id) }}" class="text-decoration-none fw-semibold">{{ p.title | truncate_chars(65) }}</a></td>
+                <td>{{ p.publication_year }}</td>
+                <td><span class="badge bg-warning-subtle text-dark border">{{ p.save_count }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="academic-card p-4 h-100">
+        <h6 class="fw-bold mb-3"><i class="bi bi-chat-dots text-primary me-2"></i>Most Discussed Posts</h6>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle small mb-0">
+            <thead class="table-light">
+              <tr><th>Post Title</th><th>Author</th><th>Comments</th></tr>
+            </thead>
+            <tbody>
+              {% for post in admin_stats.community.most_discussed_posts %}
+              <tr>
+                <td><a href="{{ url_for('posts.post_detail', post_id=post.id) }}" class="text-decoration-none fw-semibold">{{ post.title | truncate_chars(60) }}</a></td>
+                <td class="text-muted">{{ post.full_name }} ({{ post.department_code or 'N/A' }})</td>
+                <td><span class="badge bg-primary-subtle text-primary">{{ post.comment_count }}</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dimensional Drill-Down Section (University -> Dept -> Topic -> Member) -->
+  <div class="academic-card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-1"><i class="bi bi-layers text-primary me-2"></i>Dimensional Data Warehouse Drill-Down</h5>
+        <small class="text-muted">Drill down across dimensional hierarchies: University &rarr; Department &rarr; Topic &rarr; Member.</small>
+      </div>
+      <span class="badge bg-secondary-subtle text-secondary border small">DuckDB Star Schema</span>
+    </div>
+
+    <div class="row g-3 align-items-end mb-3">
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Step 1: Department Drill-Down</label>
+        <select id="drill-dept" class="form-select form-select-sm">
+          <option value="">-- All Departments (University Level) --</option>
+          {% for d in departments %}
+          <option value="{{ d.code }}">{{ d.name }} ({{ d.code }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Step 2: Research Topic Drill-Down</label>
+        <select id="drill-topic" class="form-select form-select-sm">
+          <option value="">-- Select Specific Topic --</option>
+          {% for t in all_topics %}
+          <option value="{{ t.id }}">{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <button id="btn-run-drilldown" class="btn btn-primary btn-sm rounded-pill px-4">
+          <i class="bi bi-funnel me-1"></i> Execute Drill-Down
+        </button>
+      </div>
+    </div>
+
+    <div id="drilldown-results" class="p-3 bg-light rounded border small">
+      <span class="text-muted">Select a department or topic above and click Execute Drill-Down to query the OLAP cube.</span>
+    </div>
+  </div>
+
+  <!-- Subsystem F7: Sliding-Window Topic Spikes -->
+  <div class="academic-card p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-1"><i class="bi bi-lightning-charge text-warning me-2"></i>Research Topic Trend Monitoring (F7)</h5>
+        <small class="text-muted">Z-Score velocity analysis identifying emerging research surges relative to baseline variance.</small>
+      </div>
+      <span class="badge bg-warning text-dark">Z-Score &amp; Velocity</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle small">
+        <thead class="table-light">
+          <tr>
+            <th>Research Topic</th>
+            <th>Current Events (14d)</th>
+            <th>Weekly Velocity</th>
+            <th>Baseline Mean</th>
+            <th>Z-Score</th>
+            <th>Growth Rate</th>
+            <th>Status</th>
+            <th>Explanation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in topic_spikes %}
+          <tr {% if t.is_spike %}class="table-warning fw-bold"{% endif %}>
+            <td>{{ t.topic_name }}</td>
+            <td>{{ t.current_events }}</td>
+            <td>{{ t.current_weekly_velocity }}/wk</td>
+            <td>{{ t.baseline_mean }}/wk</td>
+            <td><span class="badge {% if t.z_score >= 1.5 %}bg-danger{% else %}bg-secondary{% endif %}">{{ t.z_score }}</span></td>
+            <td>+{{ t.growth_rate_pct }}%</td>
+            <td>
+              {% if t.is_spike %}
+              <span class="badge bg-danger text-white"><i class="bi bi-exclamation-triangle-fill me-1"></i>Spike Detected</span>
+              {% elif t.z_score > 1.0 %}
+              <span class="badge bg-primary text-white">Rising</span>
+              {% else %}
+              <span class="badge bg-light text-secondary border">Stable</span>
+              {% endif %}
+            </td>
+            <td class="text-secondary">{{ t.explanation }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Cross-Department Collaboration Network -->
+  <div class="academic-card p-4 mb-4">
+    <h6 class="fw-bold mb-3"><i class="bi bi-diagram-2 text-primary me-2"></i>Cross-Department Collaboration Network</h6>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle small mb-0">
+        <thead class="table-light">
+          <tr><th>Department A</th><th>Department B</th><th>Co-Saved Papers</th><th>Synergy</th></tr>
+        </thead>
+        <tbody>
+          {% for c in collaboration_matrix %}
+          <tr>
+            <td><span class="badge bg-primary-subtle text-primary">{{ c.dept_a }}</span></td>
+            <td><span class="badge bg-secondary-subtle text-secondary">{{ c.dept_b }}</span></td>
+            <td><strong>{{ c.shared_papers }}</strong> papers</td>
+            <td style="width: 35%;">
+              <div class="progress" style="height: 6px;">
+                <div class="progress-bar bg-primary" style="width: {{ [c.shared_papers * 2.5, 100]|min }}%;"></div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Subsystem F7: Spam & Abnormal Activity Monitoring Table -->
+  <div class="academic-card p-4 mb-4" id="spamMonitoringSection">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-1"><i class="bi bi-shield-lock text-danger me-2"></i>Spam &amp; Abnormal Activity Monitoring (F7)</h5>
+        <small class="text-muted">Unsupervised Isolation Forest + Behavioral Burst Heuristics.</small>
+      </div>
+      <span class="badge bg-danger">Isolation Forest</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle small">
+        <thead class="table-light">
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Anomaly Score</th>
+            <th>Keyword Violations</th>
+            <th>Burst Ratio</th>
+            <th>Diagnostic Reason</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in flagged_accounts %}
+          <tr class="table-danger">
+            <td>
+              <strong>{{ a.full_name }}</strong><br>
+              <small class="text-muted">@{{ a.username }}</small>
+            </td>
+            <td><span class="badge bg-light text-dark border">{{ a.role }}</span></td>
+            <td><span class="badge bg-danger">{{ a.anomaly_score }}</span></td>
+            <td>{{ a.keyword_hits }} triggers</td>
+            <td>{{ (a.burst_ratio * 100)|round|int }}% burst</td>
+            <td class="text-danger small">{{ a.explanation }}</td>
+            <td><span class="badge bg-dark">Flagged / Restricted</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  // 1. Time Series Activity Chart (Month / Week / Day switcher)
+  const seriesByGranularity = {
+    month: {
+      labels: {{ admin_stats.activity.by_month | map(attribute='period') | list | tojson }},
+      events: {{ admin_stats.activity.by_month | map(attribute='count') | list | tojson }},
+      members: {{ admin_stats.activity.by_month | map(attribute='active_members') | list | tojson }}
+    },
+    week: {
+      labels: {{ admin_stats.activity.by_week | map(attribute='period') | list | tojson }},
+      events: {{ admin_stats.activity.by_week | map(attribute='count') | list | tojson }},
+      members: []
+    },
+    day: {
+      labels: {{ admin_stats.activity.by_day | map(attribute='period') | list | tojson }},
+      events: {{ admin_stats.activity.by_day | map(attribute='count') | list | tojson }},
+      members: []
+    }
+  };
+
+  const trendCtx = document.getElementById("trendChart").getContext("2d");
+  const trendChart = new Chart(trendCtx, {
+    type: "line",
+    data: {
+      labels: seriesByGranularity.month.labels,
+      datasets: [
+        {
+          label: "Activity Events",
+          data: seriesByGranularity.month.events,
+          borderColor: "#1e3a8a",
+          backgroundColor: "rgba(30, 58, 138, 0.1)",
+          fill: true,
+          tension: 0.3
+        },
+        {
+          label: "Active Members",
+          data: seriesByGranularity.month.members,
+          borderColor: "#d97706",
+          borderDash: [5, 5],
+          fill: false,
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "top" } }
+    }
+  });
+
+  document.querySelectorAll("[data-time-gran]").forEach(btn => {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll("[data-time-gran]").forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+      const g = this.dataset.timeGran;
+      trendChart.data.labels = seriesByGranularity[g].labels;
+      trendChart.data.datasets[0].data = seriesByGranularity[g].events;
+      trendChart.data.datasets[1].data = seriesByGranularity[g].members;
+      trendChart.update();
+    });
+  });
+
+  // 2. Role Distribution Donut Chart
+  new Chart(document.getElementById("rolePieChart").getContext("2d"), {
+    type: "doughnut",
+    data: {
+      labels: ["Student", "Faculty", "Researcher", "Admin"],
+      datasets: [{
+        data: [
+          {{ admin_stats.members.students }},
+          {{ admin_stats.members.faculty }},
+          {{ admin_stats.members.researchers }},
+          {{ admin_stats.members.admins }}
+        ],
+        backgroundColor: ["#1e3a8a", "#10b981", "#0284c7", "#dc2626"]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom" } }
+    }
+  });
+
+  // 3. Department Comparison Bar Chart
+  const deptCodes = {{ admin_stats.members.by_department | map(attribute='department_code') | list | tojson }};
+  const deptMembers = {{ admin_stats.members.by_department | map(attribute='total_members') | list | tojson }};
+  const postsByDeptMap = {
+    {% for r in admin_stats.community.posts_by_department %}
+    "{{ r.department_code }}": {{ r.post_count }},
+    {% endfor %}
+  };
+  const savesByDeptMap = {
+    {% for r in admin_stats.library.saves_by_department %}
+    "{{ r.department_code }}": {{ r.save_count }},
+    {% endfor %}
+  };
+
+  new Chart(document.getElementById("deptBarChart").getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: deptCodes,
+      datasets: [
+        { label: "Members", data: deptMembers, backgroundColor: "#1e3a8a" },
+        { label: "Posts", data: deptCodes.map(c => postsByDeptMap[c] || 0), backgroundColor: "#0284c7" },
+        { label: "Library Saves", data: deptCodes.map(c => savesByDeptMap[c] || 0), backgroundColor: "#d97706" }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "top" } }
+    }
+  });
+
+  // 4. Papers by Source Bar Chart
+  new Chart(document.getElementById("sourceBarChart").getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: {{ admin_stats.research.by_source | map(attribute='source_name') | list | tojson }},
+      datasets: [{
+        label: "Papers",
+        data: {{ admin_stats.research.by_source | map(attribute='paper_count') | list | tojson }},
+        backgroundColor: ["#1e3a8a", "#2563eb", "#64748b", "#10b981"]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // 5. Interactive Dimensional Drill-Down AJAX
+  document.getElementById("btn-run-drilldown").addEventListener("click", function () {
+    const dept = document.getElementById("drill-dept").value;
+    const topic = document.getElementById("drill-topic").value;
+    const resDiv = document.getElementById("drilldown-results");
+    resDiv.innerHTML = `<div class="spinner-border spinner-border-sm text-primary me-2"></div> Executing DuckDB OLAP aggregation...`;
+
+    let url = `/api/analytics/drilldown?`;
+    if (dept) url += `department_code=${dept}&`;
+    if (topic) url += `topic_id=${topic}&`;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        let html = `<h6 class="fw-bold mb-2">Drill-Down Result (Level: <span class="badge bg-primary text-uppercase">${data.level}</span>)</h6>`;
+        if (data.level === "topic") {
+          html += `<table class="table table-sm align-middle mt-2"><thead class="table-light"><tr><th>Researcher</th><th>Role</th><th>Dept</th><th>Interactions</th></tr></thead><tbody>`;
+          data.data.forEach(r => {
+            html += `<tr><td><strong>${r.full_name}</strong> (@${r.username})</td><td>${r.role || 'Academic'}</td><td>${r.department_code}</td><td><span class="badge bg-primary">${r.interactions}</span></td></tr>`;
+          });
+          html += `</tbody></table>`;
+        } else if (data.level === "department") {
+          html += `<table class="table table-sm align-middle mt-2"><thead class="table-light"><tr><th>Research Topic</th><th>Topic Activity Events</th></tr></thead><tbody>`;
+          data.data.forEach(r => {
+            html += `<tr><td>${r.topic_name}</td><td><span class="badge bg-primary">${r.topic_activity}</span></td></tr>`;
+          });
+          html += `</tbody></table>`;
+        } else {
+          html += `<pre class="mb-0 bg-white p-2 border rounded font-monospace">${JSON.stringify(data.data, null, 2)}</pre>`;
+        }
+        resDiv.innerHTML = html;
+      })
+      .catch(err => {
+        resDiv.innerHTML = `<span class="text-danger">Drill-down error: ${err}</span>`;
+      });
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,52 @@
+[
+  {
+    "question": "How do attention mechanisms enhance vision transformers?",
+    "topic": "Deep Learning & Neural Architectures",
+    "expected_keywords": [
+      "attention",
+      "transformer",
+      "representation",
+      "patch"
+    ]
+  },
+  {
+    "question": "What methods mitigate hallucinations in large language models?",
+    "topic": "Natural Language Processing & LLMs",
+    "expected_keywords": [
+      "retrieval",
+      "verification",
+      "grounding",
+      "citations"
+    ]
+  },
+  {
+    "question": "How does the FP-Growth algorithm optimize frequent itemset discovery?",
+    "topic": "Data Mining & Knowledge Discovery",
+    "expected_keywords": [
+      "fp-growth",
+      "frequent",
+      "tree",
+      "mining"
+    ]
+  },
+  {
+    "question": "What are the advantages of compute-in-memory architectures in VLSI?",
+    "topic": "VLSI Design & Neuromorphic Hardware",
+    "expected_keywords": [
+      "memory",
+      "resistive",
+      "energy",
+      "analog"
+    ]
+  },
+  {
+    "question": "What is the role of pangenome graphs in genomic variant calling?",
+    "topic": "Bioinformatics & Genomic Analytics",
+    "expected_keywords": [
+      "pangenome",
+      "variant",
+      "alignment",
+      "graph"
+    ]
+  }
+]

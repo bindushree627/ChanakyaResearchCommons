@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}Home — Chanakya Research Commons{% endblock %}
+
+{% block content %}
+<!-- Welcome & Main Search Section -->
+<section class="hero-banner text-center">
+  <div class="container">
+    <h1 class="hero-title">Welcome to Chanakya Research Commons</h1>
+    <p class="hero-subtitle">
+      Discover scholarly literature, organize your personal research library, connect with peers, and explore emerging academic discussions.
+    </p>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-7">
+        <form action="{{ url_for('search.explore') }}" method="GET" class="d-flex bg-white p-2 rounded-pill shadow-lg">
+          <input type="text" name="q" class="form-control border-0 rounded-pill ps-4 shadow-none"
+                 placeholder="Search papers, topics, researchers, or discussions..." required>
+          <button type="submit" class="btn btn-primary rounded-pill px-4 ms-2 fw-semibold">
+            <i class="bi bi-search me-1"></i> Search
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Four Quick-Access Cards -->
+<div class="container my-5">
+  <div class="row g-3">
+    <div class="col-sm-6 col-lg-3">
+      <a href="{{ url_for('library.library_index') }}" class="text-decoration-none">
+        <div class="academic-card p-4 h-100 text-center">
+          <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary d-inline-flex mb-3">
+            <i class="bi bi-journal-bookmark fs-4"></i>
+          </div>
+          <h6 class="fw-bold text-dark mb-1">Research Papers</h6>
+          <p class="text-muted small mb-0">Browse the university repository and manage your saved library.</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <a href="{{ url_for('recommendations.recommendations_page') }}" class="text-decoration-none">
+        <div class="academic-card p-4 h-100 text-center">
+          <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success d-inline-flex mb-3">
+            <i class="bi bi-stars fs-4"></i>
+          </div>
+          <h6 class="fw-bold text-dark mb-1">For You</h6>
+          <p class="text-muted small mb-0">Personalized paper suggestions aligned with your research interests.</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <a href="{{ url_for('posts.community_feed') }}" class="text-decoration-none">
+        <div class="academic-card p-4 h-100 text-center">
+          <div class="rounded-circle bg-danger bg-opacity-10 p-3 text-danger d-inline-flex mb-3">
+            <i class="bi bi-chat-square-text fs-4"></i>
+          </div>
+          <h6 class="fw-bold text-dark mb-1">Community</h6>
+          <p class="text-muted small mb-0">Read research notes, ask questions, and join academic debates.</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <a href="{{ url_for('assistant.assistant_page') }}" class="text-decoration-none">
+        <div class="academic-card p-4 h-100 text-center">
+          <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info d-inline-flex mb-3">
+            <i class="bi bi-robot fs-4"></i>
+          </div>
+          <h6 class="fw-bold text-dark mb-1">Research Assistant</h6>
+          <p class="text-muted small mb-0">Ask research questions and get cited answers from indexed papers.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Popular Research Papers -->
+<div class="container mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">Popular Research Papers</h4>
+    <a href="{{ url_for('library.library_index') }}" class="text-decoration-none small fw-semibold">Browse All Papers &rarr;</a>
+  </div>
+
+  <div class="row g-3">
+    {% for p in top_papers %}
+    <div class="col-md-6 col-lg-4">
+      <div class="academic-card p-3 h-100 d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          {% if p.topic_name %}
+          <span class="badge badge-topic">{{ p.topic_name }}</span>
+          {% else %}
+          <span></span>
+          {% endif %}
+          <span class="badge bg-light text-dark border"><i class="bi bi-bookmark text-danger me-1"></i>{{ p.save_count }} saves</span>
+        </div>
+        <h6 class="fw-bold mb-2">
+          <a href="{{ url_for('library.paper_detail', paper_id=p.id) }}" class="text-decoration-none text-dark">
+            {{ p.title }}
+          </a>
+        </h6>
+        <p class="text-muted small mb-2">
+          {% for a in p.authors %}{{ a.author_name }}{% if not loop.last %}, {% endif %}{% endfor %}
+          &bull; {{ p.publication_year }} &bull; {{ p.venue }}
+        </p>
+        <p class="text-secondary small flex-grow-1">
+          {{ p.abstract | truncate_chars(110) }}
+        </p>
+        <div class="pt-2 border-top d-flex justify-content-between align-items-center">
+          <small class="text-muted"><i class="bi bi-quote"></i> {{ p.citation_count }} citations</small>
+          <a href="{{ url_for('library.paper_detail', paper_id=p.id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+            View Paper
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Recent Community Discussions & Trending Topics -->
+<div class="container mb-5">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">Recent Community Discussions</h4>
+        <a href="{{ url_for('posts.community_feed') }}" class="text-decoration-none small fw-semibold">View Community &rarr;</a>
+      </div>
+      {% if recent_posts %}
+      <div class="d-flex flex-column gap-3">
+        {% for post in recent_posts %}
+        <div class="academic-card p-3">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <small class="text-muted">
+              <strong class="text-dark">{{ post.full_name }}</strong>
+              {% if post.department_code %}&bull; {{ post.department_code }}{% endif %}
+              &bull; {{ post.created_at | format_date }}
+            </small>
+            {% if post.topic_name %}
+            <span class="badge badge-topic">{{ post.topic_name }}</span>
+            {% endif %}
+          </div>
+          <h6 class="fw-bold mb-1">
+            <a href="{{ url_for('posts.post_detail', post_id=post.id) }}" class="text-decoration-none text-dark">
+              {{ post.title }}
+            </a>
+          </h6>
+          <p class="text-secondary small mb-2">{{ post.content | truncate_chars(140) }}</p>
+          <div class="d-flex justify-content-between align-items-center small text-muted">
+            <span><i class="bi bi-chat-left-text me-1"></i>{{ post.comment_count }} comments &bull; <i class="bi bi-hand-thumbs-up ms-1 me-1"></i>{{ post.upvote_count }}</span>
+            <a href="{{ url_for('posts.post_detail', post_id=post.id) }}" class="text-decoration-none fw-semibold">Read &rarr;</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="academic-card p-4 text-center text-muted small">No recent discussions yet.</div>
+      {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">Trending Topics</h4>
+      </div>
+      <div class="academic-card p-3">
+        {% if trending_topics %}
+        <div class="d-flex flex-column gap-2">
+          {% for t in trending_topics %}
+          <a href="{{ url_for('search.explore', topic_id=t.id) if t.id else url_for('search.explore', q=t.name) }}"
+             class="d-flex justify-content-between align-items-center p-2 rounded border text-decoration-none text-dark bg-light">
+            <span class="small fw-semibold">{{ t.name }}</span>
+            {% if t.is_spike %}
+            <span class="badge bg-warning text-dark">Rising</span>
+            {% else %}
+            <i class="bi bi-arrow-right-short text-muted"></i>
+            {% endif %}
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted small mb-0">No trending topics available.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

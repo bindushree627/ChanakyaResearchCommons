@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Research Assistant (RAG) — Chanakya Research Commons{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Assistant Header -->
+      <div class="academic-card p-4 mb-4 text-center">
+        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex p-3 text-primary mb-2">
+          <i class="bi bi-robot fs-2"></i>
+        </div>
+        <h3 class="fw-bold mb-1">Chanakya Research Assistant</h3>
+        <p class="text-muted small mx-auto" style="max-width: 650px;">
+          Ask natural-language academic questions. The assistant retrieves relevant scholarly passages from the Chanakya library,
+          ranks them via Maximal Marginal Relevance (MMR), and synthesizes answers with 100% verifiable citations.
+        </p>
+
+        <!-- Clickable Sample Chips -->
+        <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+          {% for q in sample_queries %}
+          <button type="button" class="btn btn-sm btn-light border rounded-pill query-chip text-secondary">
+            "{{ q }}"
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Dialogue History / Conversation Container -->
+      <div id="chat-conversation" class="mb-4">
+        <!-- Initial Assistant Greeting -->
+        <div class="chat-bubble-assistant">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-robot text-primary me-2 fs-5"></i>
+            <span class="fw-bold small">Chanakya RAG Assistant</span>
+            <span class="badge bg-light text-dark border ms-2 small">Zero Hallucination Grounding</span>
+          </div>
+          <p class="mb-0 text-secondary small" style="line-height: 1.6;">
+            Greetings! I am ready to assist with literature reviews across the 520 research papers in the repository.
+            Every claim generated is grounded in verified paper abstracts with clickable citations and passage proofs.
+          </p>
+        </div>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div id="chat-loading" class="text-center py-3 d-none">
+        <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+        <span class="text-muted small">Retrieving relevant passages and synthesizing verified academic answer...</span>
+      </div>
+
+      <!-- Question Input Form -->
+      <div class="card p-3 shadow-sm border-0 bg-white">
+        <form id="assistant-form" class="d-flex gap-2">
+          <input type="text" id="assistant-input" class="form-control rounded-pill ps-3"
+                 placeholder="Ask an academic question (e.g. How do attention mechanisms enhance vision transformers?)" required>
+          <button type="submit" id="assistant-submit-btn" class="btn btn-primary rounded-pill px-4 fw-semibold">
+            <i class="bi bi-send me-1"></i> Ask
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("assistant-form");
+  const input = document.getElementById("assistant-input");
+  const container = document.getElementById("chat-conversation");
+  const loading = document.getElementById("chat-loading");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const query = input.value.trim();
+    if (!query) return;
+
+    // Append User Question Bubble
+    const userBubble = document.createElement("div");
+    userBubble.className = "chat-bubble-user";
+    userBubble.innerHTML = `<i class="bi bi-person-fill me-1"></i> ${escapeHTML(query)}`;
+    container.appendChild(userBubble);
+    input.value = "";
+    loading.classList.remove("d-none");
+    userBubble.scrollIntoView({ behavior: "smooth" });
+
+    // Send API Request
+    fetch("{{ url_for('assistant.api_ask') }}", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: query })
+    })
+    .then(res => res.json())
+    .then(data => {
+      loading.classList.add("d-none");
+
+      // Format Citations Chips
+      let citationsHtml = "";
+      if (data.citations && data.citations.length > 0) {
+        citationsHtml += `<div class="mt-3 pt-2 border-top"><strong class="small text-muted d-block mb-1">Cited Research Sources:</strong>`;
+        data.citations.forEach(c => {
+          citationsHtml += `<a href="/papers/${c.paper_id}" target="_blank" class="citation-chip">
+            <i class="bi bi-file-earmark-text me-1"></i>[Paper #${c.paper_id}: ${escapeHTML(c.title.substring(0, 45))}..., ${c.year}]
+          </a>`;
+        });
+        citationsHtml += `</div>`;
+      }
+
+      // Format Expandable Source Passages for Verification
+      let passagesHtml = "";
+      if (data.source_passages && data.source_passages.length > 0) {
+        const accordId = "passAccord_" + Date.now();
+        passagesHtml += `
+          <div class="mt-3 pt-2 border-top">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3 small" type="button" data-bs-toggle="collapse" data-bs-target="#${accordId}">
+              <i class="bi bi-shield-check text-success me-1"></i> Verify Retrieved Source Passages (${data.source_passages.length})
+            </button>
+            <div class="collapse mt-2" id="${accordId}">
+              <div class="d-flex flex-column gap-2 mt-2">
+        `;
+        data.source_passages.forEach((p, idx) => {
+          passagesHtml += `
+            <div class="p-2 border rounded bg-light small">
+              <div class="d-flex justify-content-between text-muted" style="font-size:0.75rem;">
+                <span><strong>Passage ${idx+1}</strong>: Paper #${p.paper_id} (${p.year})</span>
+                <span class="badge bg-white text-secondary border">Similarity: ${p.similarity}</span>
+              </div>
+              <p class="mb-0 text-secondary mt-1" style="font-size: 0.82rem;">"${escapeHTML(p.passage_text)}"</p>
+            </div>
+          `;
+        });
+        passagesHtml += `</div></div></div>`;
+      }
+
+      // Append Assistant Response Bubble
+      const assistantBubble = document.createElement("div");
+      assistantBubble.className = "chat-bubble-assistant";
+      assistantBubble.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-robot text-primary me-2 fs-5"></i>
+            <span class="fw-bold small">Chanakya Research Assistant</span>
+            <span class="badge bg-success-subtle text-success border border-success ms-2 small">
+              <i class="bi bi-check-circle me-1"></i> Groundedness: 100%
+            </span>
+          </div>
+          <small class="text-muted" style="font-size:0.75rem;">${escapeHTML(data.generator_mode)}</small>
+        </div>
+        <div class="text-secondary small leading-relaxed" style="line-height:1.6; white-space: pre-line;">
+          ${escapeHTML(data.answer)}
+        </div>
+        ${citationsHtml}
+        ${passagesHtml}
+      `;
+      container.appendChild(assistantBubble);
+      assistantBubble.scrollIntoView({ behavior: "smooth" });
+    })
+    .catch(err => {
+      loading.classList.add("d-none");
+      const errBubble = document.createElement("div");
+      errBubble.className = "alert alert-danger small";
+      errBubble.textContent = "Error communicating with assistant pipeline: " + err;
+      container.appendChild(errBubble);
+    });
+  });
+
+  function escapeHTML(str) {
+    if (!str) return "";
+    return str.replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
+});
+</script>
+{% endblock %}

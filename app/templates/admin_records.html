@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}Admin Record Inspection ({{ record_type | title }}) — Chanakya Research Commons{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <a href="{{ url_for('analytics.analytics_dashboard') }}" class="btn btn-sm btn-outline-secondary rounded-pill">
+          <i class="bi bi-arrow-left me-1"></i> Dashboard
+        </a>
+        <h3 class="fw-bold mb-0">Record Inspection: {{ record_type | title }}</h3>
+        <span class="badge bg-danger rounded-pill">Admin Only</span>
+      </div>
+      <small class="text-muted">Live operational records ({{ result.total }} matching records). Private notes and credentials are excluded.</small>
+    </div>
+
+    <!-- Record Type Switcher -->
+    <div class="btn-group btn-group-sm" role="group">
+      {% for rt, label in [('papers', 'Papers'), ('members', 'Members'), ('posts', 'Posts'), ('comments', 'Comments'), ('replies', 'Replies'), ('saves', 'Saves')] %}
+      <a href="{{ url_for('analytics.admin_records_view', record_type=rt) }}"
+         class="btn {% if record_type == rt %}btn-primary{% else %}btn-outline-primary{% endif %}">{{ label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Search & Filters -->
+  <form method="GET" action="{{ url_for('analytics.admin_records_view', record_type=record_type) }}" class="academic-card p-3 mb-4">
+    <div class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold mb-1">Search</label>
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Keyword, title, user...">
+      </div>
+      {% if record_type in ('members', 'posts', 'comments', 'replies', 'saves') %}
+      <div class="col-md-2">
+        <label class="form-label small fw-semibold mb-1">Department</label>
+        <select name="department_id" class="form-select form-select-sm">
+          <option value="">All Departments</option>
+          {% for d in departments %}
+          <option value="{{ d.id }}" {% if department_id == d.id|string %}selected{% endif %}>{{ d.code }} — {{ d.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small fw-semibold mb-1">Role</label>
+        <select name="role" class="form-select form-select-sm">
+          <option value="">All Roles</option>
+          {% for rname in ['Student', 'Faculty', 'Researcher', 'Admin'] %}
+          <option value="{{ rname }}" {% if role == rname %}selected{% endif %}>{{ rname }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      {% if record_type in ('papers', 'posts', 'saves') %}
+      <div class="col-md-2">
+        <label class="form-label small fw-semibold mb-1">Topic</label>
+        <select name="topic_id" class="form-select form-select-sm">
+          <option value="">All Topics</option>
+          {% for t in all_topics %}
+          <option value="{{ t.id }}" {% if topic_id == t.id|string %}selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <div class="col-md-2">
+        <label class="form-label small fw-semibold mb-1">Sort Order</label>
+        <select name="order" class="form-select form-select-sm">
+          <option value="desc" {% if order == 'desc' %}selected{% endif %}>Newest / Highest ID</option>
+          <option value="asc" {% if order == 'asc' %}selected{% endif %}>Oldest / Lowest ID</option>
+        </select>
+      </div>
+      <div class="col-md-1 d-grid">
+        <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Records Table -->
+  <div class="academic-card p-3">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle small mb-0">
+        <thead class="table-light">
+          {% if record_type == 'papers' %}
+          <tr>
+            <th>ID</th><th>Title</th><th>Authors</th><th>Topic</th><th>Year</th><th>Source</th><th>Saves</th><th>Created</th>
+          </tr>
+          {% elif record_type == 'members' %}
+          <tr>
+            <th>ID</th><th>Full Name</th><th>Username</th><th>Email</th><th>Role</th><th>Department</th><th>Status</th><th>Joined</th>
+          </tr>
+          {% elif record_type == 'posts' %}
+          <tr>
+            <th>ID</th><th>Title</th><th>Author</th><th>Dept</th><th>Topic</th><th>Comments</th><th>Upvotes</th><th>Created</th>
+          </tr>
+          {% elif record_type in ('comments', 'replies') %}
+          <tr>
+            <th>ID</th><th>Post</th>{% if record_type == 'replies' %}<th>Parent ID</th>{% endif %}<th>Author</th><th>Dept</th><th>Content</th><th>Created</th>
+          </tr>
+          {% elif record_type == 'saves' %}
+          <tr>
+            <th>Save ID</th><th>Paper</th><th>Year</th><th>Member</th><th>Role</th><th>Dept</th><th>Saved At</th>
+          </tr>
+          {% endif %}
+        </thead>
+        <tbody>
+          {% for row in result.rows %}
+            {% if record_type == 'papers' %}
+            <tr>
+              <td class="font-monospace">#{{ row.id }}</td>
+              <td><a href="{{ url_for('library.paper_detail', paper_id=row.id) }}" class="fw-semibold text-decoration-none">{{ row.title }}</a></td>
+              <td class="text-muted">{{ row.authors or '—' }}</td>
+              <td><span class="badge bg-light text-dark border">{{ row.topic_name }}</span></td>
+              <td>{{ row.publication_year or '—' }}</td>
+              <td><span class="badge bg-secondary-subtle text-secondary">{{ row.sources or 'Internal' }}</span></td>
+              <td>{{ row.save_count }}</td>
+              <td class="text-muted">{{ row.created_at | format_date }}</td>
+            </tr>
+            {% elif record_type == 'members' %}
+            <tr>
+              <td class="font-monospace">#{{ row.id }}</td>
+              <td class="fw-semibold"><a href="{{ url_for('auth.user_profile', user_id=row.id) }}" class="text-decoration-none">{{ row.full_name }}</a></td>
+              <td class="text-muted">@{{ row.username }}</td>
+              <td class="text-muted">{{ row.email }}</td>
+              <td><span class="badge bg-primary-subtle text-primary">{{ row.role }}</span></td>
+              <td>{{ row.department_code }}</td>
+              <td>{% if row.is_spam_flagged %}<span class="badge bg-danger">Flagged</span>{% else %}<span class="badge bg-success-subtle text-success">Active</span>{% endif %}</td>
+              <td class="text-muted">{{ row.created_at | format_date }}</td>
+            </tr>
+            {% elif record_type == 'posts' %}
+            <tr>
+              <td class="font-monospace">#{{ row.id }}</td>
+              <td><a href="{{ url_for('posts.post_detail', post_id=row.id) }}" class="fw-semibold text-decoration-none">{{ row.title }}</a></td>
+              <td>{{ row.full_name }} <small class="text-muted">(@{{ row.username }})</small></td>
+              <td>{{ row.department_code }}</td>
+              <td><span class="badge bg-light text-dark border">{{ row.topic_name }}</span></td>
+              <td>{{ row.comment_count }}</td>
+              <td>{{ row.upvote_count }}</td>
+              <td class="text-muted">{{ row.created_at | format_date }}</td>
+            </tr>
+            {% elif record_type in ('comments', 'replies') %}
+            <tr>
+              <td class="font-monospace">#{{ row.id }}</td>
+              <td><a href="{{ url_for('posts.post_detail', post_id=row.post_id) }}" class="text-decoration-none">{{ row.post_title | truncate_chars(50) }}</a></td>
+              {% if record_type == 'replies' %}<td class="font-monospace">#{{ row.parent_comment_id }}</td>{% endif %}
+              <td>{{ row.full_name }} <small class="text-muted">(@{{ row.username }})</small></td>
+              <td>{{ row.department_code }}</td>
+              <td class="text-secondary">{{ row.content | truncate_chars(90) }}</td>
+              <td class="text-muted">{{ row.created_at | format_date }}</td>
+            </tr>
+            {% elif record_type == 'saves' %}
+            <tr>
+              <td class="font-monospace">#{{ row.id }}</td>
+              <td><a href="{{ url_for('library.paper_detail', paper_id=row.paper_id) }}" class="fw-semibold text-decoration-none">{{ row.paper_title | truncate_chars(65) }}</a></td>
+              <td>{{ row.publication_year or '—' }}</td>
+              <td>{{ row.full_name }} <small class="text-muted">(@{{ row.username }})</small></td>
+              <td>{{ row.role }}</td>
+              <td>{{ row.department_code }}</td>
+              <td class="text-muted">{{ row.saved_at | format_date }}</td>
+            </tr>
+            {% endif %}
+          {% else %}
+            <tr><td colspan="8" class="text-center text-muted py-4">No matching records found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top small text-muted">
+      <span>Page {{ result.page }} of {{ result.total_pages }} ({{ result.total }} total)</span>
+      <div class="btn-group btn-group-sm">
+        <a class="btn btn-outline-secondary {% if result.page <= 1 %}disabled{% endif %}"
+           href="{{ url_for('analytics.admin_records_view', record_type=record_type, q=q, department_id=department_id, role=role, topic_id=topic_id, order=order, page=result.page-1) }}">Previous</a>
+        <a class="btn btn-outline-secondary {% if result.page >= result.total_pages %}disabled{% endif %}"
+           href="{{ url_for('analytics.admin_records_view', record_type=record_type, q=q, department_id=department_id, role=role, topic_id=topic_id, order=order, page=result.page+1) }}">Next</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

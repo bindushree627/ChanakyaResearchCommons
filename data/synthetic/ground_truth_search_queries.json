@@ -1,0 +1,82 @@
+[
+  {
+    "query": "deep learning vision transformer attention",
+    "relevant_topic": "Deep Learning & Neural Architectures"
+  },
+  {
+    "query": "retrieval augmented generation llm hallucination",
+    "relevant_topic": "Natural Language Processing & LLMs"
+  },
+  {
+    "query": "frequent itemset mining fp growth algorithm",
+    "relevant_topic": "Data Mining & Knowledge Discovery"
+  },
+  {
+    "query": "distributed consensus raft paxos cloud",
+    "relevant_topic": "Distributed Cloud Systems"
+  },
+  {
+    "query": "zero shot object detection visual question answering",
+    "relevant_topic": "Computer Vision & Visual Computing"
+  },
+  {
+    "query": "edge computing lorawan iot energy harvesting",
+    "relevant_topic": "Wireless IoT & Edge Computing"
+  },
+  {
+    "query": "vlsi compute in memory resistive ram neuromorphic",
+    "relevant_topic": "VLSI Design & Neuromorphic Hardware"
+  },
+  {
+    "query": "genomic structural variant calling pangenome alignment",
+    "relevant_topic": "Bioinformatics & Genomic Analytics"
+  },
+  {
+    "query": "supply chain inventory stochastic demand optimization",
+    "relevant_topic": "Decision Science & Operations Analytics"
+  },
+  {
+    "query": "variational quantum classifiers barren plateaus",
+    "relevant_topic": "Quantum Machine Learning"
+  },
+  {
+    "query": "graph neural networks node classification academic",
+    "relevant_topic": "Data Mining & Knowledge Discovery"
+  },
+  {
+    "query": "adversarial robustness neural networks certified bounds",
+    "relevant_topic": "Deep Learning & Neural Architectures"
+  },
+  {
+    "query": "serverless workflow cold start latency microservices",
+    "relevant_topic": "Distributed Cloud Systems"
+  },
+  {
+    "query": "single cell transcriptomics clustering trajectory",
+    "relevant_topic": "Bioinformatics & Genomic Analytics"
+  },
+  {
+    "query": "spiking neural network processors event camera",
+    "relevant_topic": "VLSI Design & Neuromorphic Hardware"
+  },
+  {
+    "query": "quantum error mitigation noisy intermediate scale",
+    "relevant_topic": "Quantum Machine Learning"
+  },
+  {
+    "query": "privacy preserving federated association rules",
+    "relevant_topic": "Data Mining & Knowledge Discovery"
+  },
+  {
+    "query": "multi objective portfolio genetic algorithm",
+    "relevant_topic": "Decision Science & Operations Analytics"
+  },
+  {
+    "query": "6g sub thz beamforming channel estimation",
+    "relevant_topic": "Wireless IoT & Edge Computing"
+  },
+  {
+    "query": "monocular depth estimation transformer backbones",
+    "relevant_topic": "Computer Vision & Visual Computing"
+  }
+]

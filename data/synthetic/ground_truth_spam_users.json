@@ -1,0 +1,27 @@
+[
+  {
+    "user_id": 56,
+    "username": "bot_promo_99",
+    "reason": "Bursty spam posting & commercial promotional text"
+  },
+  {
+    "user_id": 57,
+    "username": "paper_mill_agent",
+    "reason": "Bursty spam posting & commercial promotional text"
+  },
+  {
+    "user_id": 58,
+    "username": "ad_spammer_x",
+    "reason": "Bursty spam posting & commercial promotional text"
+  },
+  {
+    "user_id": 59,
+    "username": "spam_bot_academic",
+    "reason": "Bursty spam posting & commercial promotional text"
+  },
+  {
+    "user_id": 60,
+    "username": "fake_profile_bot",
+    "reason": "Bursty spam posting & commercial promotional text"
+  }
+]

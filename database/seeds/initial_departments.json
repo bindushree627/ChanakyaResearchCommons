@@ -1,0 +1,38 @@
+[
+  {
+    "code": "CSE",
+    "name": "Department of Computer Science & Engineering",
+    "description": "Focussing on distributed systems, algorithms, cloud computing, cybersecurity, and software engineering.",
+    "faculty_count": 28
+  },
+  {
+    "code": "DSAI",
+    "name": "Department of Data Science & Artificial Intelligence",
+    "description": "Specialising in machine learning, deep learning, NLP, computer vision, data warehousing, and big data analytics.",
+    "faculty_count": 22
+  },
+  {
+    "code": "ISE",
+    "name": "Department of Information Science & Engineering",
+    "description": "Research in network architectures, wireless sensor networks, IoT, information security, and web technologies.",
+    "faculty_count": 19
+  },
+  {
+    "code": "ECE",
+    "name": "Department of Electronics & Communication Engineering",
+    "description": "Advanced research in VLSI design, embedded systems, digital signal processing, robotics, and communication systems.",
+    "faculty_count": 25
+  },
+  {
+    "code": "BTBI",
+    "name": "Department of Biotechnology & Bioinformatics",
+    "description": "Computational biology, genomics, structural bioinformatics, bioprocess engineering, and biological data mining.",
+    "faculty_count": 16
+  },
+  {
+    "code": "MDS",
+    "name": "Department of Management & Decision Sciences",
+    "description": "Quantitative finance, supply chain optimization, business analytics, decision theory, and operations research.",
+    "faculty_count": 15
+  }
+]

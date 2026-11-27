@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: chanakya_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: chanakya_commons
+      POSTGRES_USER: chanakya
+      POSTGRES_PASSWORD: commons_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema/postgres_schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chanakya -d chanakya_commons"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: chanakya_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://chanakya:commons_password_2026@db:5432/chanakya_commons
+      SECRET_KEY: chanakya_academic_secret_vsem_2026
+      EMBEDDING_MODEL_NAME: all-MiniLM-L6-v2
+      FLASK_APP: app:create_app
+      FLASK_ENV: production
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+
+volumes:
+  pgdata:

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Account Settings — Chanakya Research Commons{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="academic-card p-4">
+        <h3 class="fw-bold mb-1">Account & Research Preferences</h3>
+        <p class="text-muted small mb-4">Manage your profile metadata and research interest vectors used by the recommendation engine.</p>
+
+        <form action="{{ url_for('auth.settings') }}" method="POST">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Full Name *</label>
+            <input type="text" name="full_name" class="form-control" value="{{ user.full_name }}" required>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-semibold">Username</label>
+              <input type="text" class="form-control bg-light" value="{{ user.username }}" readonly disabled>
+              <small class="text-muted">Username cannot be changed.</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-semibold">Academic Role</label>
+              <input type="text" class="form-control bg-light" value="{{ user.role }}" readonly disabled>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">University Department</label>
+            <select name="department_id" class="form-select">
+              <option value="">No department assigned</option>
+              {% for d in departments %}
+              <option value="{{ d.id }}" {% if user.department_id == d.id %}selected{% endif %}>{{ d.name }} ({{ d.code }})</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Academic Bio</label>
+            <textarea name="bio" rows="3" class="form-control" placeholder="Brief summary of your academic background and thesis focus...">{{ user.bio }}</textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-semibold">Google Scholar URL</label>
+              <input type="url" name="scholar_url" class="form-control" value="{{ user.scholar_url or '' }}" placeholder="https://scholar.google.com/...">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-semibold">Personal / Lab Website</label>
+              <input type="url" name="website_url" class="form-control" value="{{ user.website_url or '' }}" placeholder="https://...">
+            </div>
+          </div>
+
+          <!-- Research Interests Selection -->
+          <div class="mb-4 pt-3 border-top">
+            <label class="form-label small fw-semibold d-block mb-1">Select Research Interest Focus Areas</label>
+            <small class="text-muted d-block mb-3">These topics directly compute your personal semantic vector in the Content-Based Recommendation Engine.</small>
+            
+            <div class="row g-2">
+              {% for t in all_topics %}
+              <div class="col-md-6">
+                <div class="form-check p-2 border rounded bg-light">
+                  <input class="form-check-input ms-0 me-2" type="checkbox" name="topics" value="{{ t.name }}" id="topic_{{ loop.index }}"
+                         {% if t.name in current_interests %}checked{% endif %}>
+                  <label class="form-check-label small" for="topic_{{ loop.index }}">
+                    {{ t.name }}
+                  </label>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{{ url_for('auth.my_profile') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-4">Cancel</a>
+            <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
